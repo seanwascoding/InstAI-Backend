@@ -16,6 +16,9 @@ router.use((req, res, next) => {
 //TODO edit request to requestData
 router.get('/process', async (req, res) => {
     try {
+        //! transfer data
+        
+
         //! read image from directory & send json(request) to stable diffusion
         fs.readFile('./images/dog.png', { encoding: 'base64' }, async (err, data) => {
             if (err) {
@@ -72,7 +75,6 @@ router.get('/process', async (req, res) => {
         console.log(err)
         res.status(500).send("error")
     }
-
 })
 
 module.exports = { router }
