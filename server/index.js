@@ -10,13 +10,7 @@ app.use('/api', api.router)
 
 //* open server
 const port = process.env.PORT || 8080
-const server = app.listen(port, () => {
-    console.log('working to open')
-})
-
-//* Database
-//TODO 
-
+const server = app.listen(port, () => { console.log('working to open') })
 
 //* websocket
 const wss = new WebSocket.Server({ server })
@@ -27,7 +21,7 @@ wss.on('connection', (ws) => {
     ws.on('message', (message) => {
         console.log(message)
 
-        
+
 
 
 
