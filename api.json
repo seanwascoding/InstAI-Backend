@@ -1,0 +1,131 @@
+{
+    "account":
+    {
+        "/api/account/signup":
+        {
+            "method":"POST",
+            "request":
+            {
+                "fname":"string",
+                "lname":"string",
+                "email":"string",
+                "password":"string"
+            },
+            "response":
+            {
+                "messages":"string"
+            }
+        },
+
+        "/api/account/login":
+        {
+            "method":"POST",
+            "request":
+            {
+                "email":"string",
+                "password":"string"
+            },
+            "response":
+            {
+                "messages":"string"
+            }
+        }
+    },
+    "upload":
+    {
+        "/api/upload/upload":
+        {
+            "method":"POST",
+            "request":
+            {
+                "multipart/form-data":"......"
+            },
+            "response":
+            {
+                "messages":"string"
+            }
+        },
+
+        "/api/upload/download/:filename":
+        {
+            "method":"GET",
+            "response":
+            {
+                "messages":"string"
+            }
+        }
+    },
+    "imag2imag":
+    {
+        "/api/img2img/process":
+        {
+            "method":"POST",
+            "request":
+            {
+                "init_images": "string",
+                "prompt": "string",
+                "negative_prompt": "string",
+                "resize_mode": "int",
+                "denoising_strength": "int",
+                "inpaint_full_res": "boolean",
+                "inpaint_full_res_padding": "int",
+                "inpainting_mask_invert": "int",
+                "initial_noise_multiplier":"int",
+                "styles": [], 
+                "seed": "int",
+                "batch_size":"int",
+                "n_iter":"int",
+                "steps": "int",
+                "cfg_scale":"int",
+                "width": "int",
+                "height": "int",
+                "restore_faces": "boolean",
+                "mask_blur": "int",
+                "tiling": "boolean",
+                "eta": "int",
+                "sampler_index": "string",
+                "alwayson_scripts": "",
+                "override_settings": {
+                    "sd_model_checkpoint": "string"
+                }
+            },
+            "response":
+            {
+                "messages":"string"
+            }
+        }
+    },
+    "txt2img":
+    {
+        "/api/txt2img/process":
+        {
+            "method":"POST",
+            "request":
+            {
+                "prompt": "string",
+                "negative_prompt": "string",
+                "denoising_strength": "int",
+                "styles": [],
+                "seed": "int",
+                "batch_size": "int",
+                "n_iter": "int",
+                "steps": "int",
+                "cfg_scale": "int",
+                "width": "int",
+                "height": "int",
+                "restore_faces": "boolean",
+                "tiling": "boolean",
+                "eta": "int",
+                "sampler_index": "string",
+                "alwayson_scripts": "",
+                "override_settings": {
+                    "sd_model_checkpoint": "string"
+                }
+            },
+            "response":
+            {
+                "messages":"string"
+            }
+        }
+    }
+}

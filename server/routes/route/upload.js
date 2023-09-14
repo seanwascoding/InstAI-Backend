@@ -19,12 +19,12 @@ router.post('/upload', upload.array('images', 10), (req, res) => {
         res.json({ message: 'Image uploaded successfully!', id: results.insertId });
 
         //!　test => search image(buffer=>binary)
-        pool.query('select * from photo where file_name=?', [filename], (err, data) => {
-            if (err) {
-                console.log(err)
-            }
-            console.log(data)
-        })
+        // pool.query('select * from photo where file_name=?', [filename], (err, data) => {
+        //     if (err) {
+        //         console.log(err)
+        //     }
+        //     console.log(data)
+        // })
     });
 });
 
