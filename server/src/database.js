@@ -1,4 +1,5 @@
 const mysql = require("mysql2");
+const multer = require("multer");
 
 const pool = mysql.createConnection({
     host: "localhost",
