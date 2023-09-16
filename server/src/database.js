@@ -1,10 +1,12 @@
 const mysql = require("mysql2");
 const multer = require("multer");
+const fs = require('fs')
+const path = require('path')
 
 const pool = mysql.createConnection({
     host: "localhost",
     user: 'root',
-    password: '',
+    password: 'Amks94884674?',
     database: "test"
 })
 pool.connect(err => {
@@ -15,10 +17,15 @@ pool.connect(err => {
 //* setup download destination
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Destination folder for uploaded images
+        const username = req.query.username
+        const dir = path.join(__dirname, '../uploads', username)
+        if(!fs.existsSync(dir)){
+            fs.mkdirSync(dir, { recursive: true })
+        }
+        cb(null, dir);
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + '_' + file.originalname); // Unique filename for each uploaded image
+        cb(null, Date.now() + '_' + file.originalname);
     },
 });
 

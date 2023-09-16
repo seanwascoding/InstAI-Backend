@@ -1,11 +1,13 @@
 const express = require('express')
 const path = require('path')
 const { WebSocket } = require('ws')
+const bodyParser=require('body-parser')
 const app = express()
 const api = require('./routes/api')
 
 //* server setup
-app.use(express.static(path.join(__dirname, '../client')))
+app.use(bodyParser.json());
+// app.use(express.static(path.join(__dirname, '../client')))
 app.use('/api', api.router)
 
 //* open server

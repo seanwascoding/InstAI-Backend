@@ -33,7 +33,7 @@
     },
     "upload":
     {
-        "/api/upload/upload":
+        "/api/upload/upload?username=${username}":
         {
             "method":"POST",
             "request":
@@ -46,7 +46,7 @@
             }
         },
 
-        "/api/upload/download/:filename":
+        "/api/upload/download?filename=${filename}&username=${username}":
         {
             "method":"GET",
             "response":
