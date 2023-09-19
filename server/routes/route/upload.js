@@ -3,11 +3,18 @@ const multer = require("multer");
 const path = require('path');
 const router = express.Router()
 const { pool, storage } = require('../../src/database.js');
-const { unwatchFile } = require('fs');
+
+router.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    console.log(req.method, req.url)
+    next()
+})
 
 //* upload image to SQL
 const upload = multer({ storage: storage })
-router.post('/upload', upload.array('images', 10), (req, res) => {
+router.post('/upload', upload.array('file'), (req, res) => {
     // //! prepare
     const username = req.query.username
     const filename = req.files[0].filename;
@@ -61,5 +68,9 @@ router.get('/download', (req, res) => {
     // res.send("test work")
 
 })
+
+//TODO search under the user of files
+
+
 
 module.exports = { router }

@@ -104,7 +104,6 @@
             {
                 "prompt": "string",
                 "negative_prompt": "string",
-                "denoising_strength": "int",
                 "styles": [],
                 "seed": "int",
                 "batch_size": "int",
@@ -115,8 +114,17 @@
                 "height": "int",
                 "restore_faces": "boolean",
                 "tiling": "boolean",
-                "eta": "int",
+                "eta": "int",       
                 "sampler_index": "string",
+
+                "enable_hr": "boolean",
+                "hr_upscaler": "string",
+                "hr_second_pass_steps": "int",
+                "denoising_strength": "int",
+                "hr_scale": "int",
+                "hr_resize_x": "int",
+                "hr_resize_y": "int",
+
                 "alwayson_scripts": "",
                 "override_settings": {
                     "sd_model_checkpoint": "string"
