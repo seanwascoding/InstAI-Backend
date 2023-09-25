@@ -31,7 +31,7 @@
             }
         }
     },
-    "upload":
+    "Transfer_data":
     {
         "/api/upload/upload?username=${username}":
         {
@@ -50,6 +50,15 @@
         },
 
         "/api/upload/download?filename=${filename}&username=${username}":
+        {
+            "method":"GET",
+            "response":
+            {
+                "messages":"string"
+            }
+        },
+
+        "/api/upload/checkdata?username=${username}":
         {
             "method":"GET",
             "response":

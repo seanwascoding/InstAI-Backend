@@ -70,7 +70,31 @@ router.get('/download', (req, res) => {
 })
 
 //TODO search under the user of files
-
+router.get('/checkdata',(req,res)=>{
+    try{
+        const username = req.query.username
+        const path = path.join(__dirname,'../../uploads',username)
+        console.log(username,path)
+        if(fs.existsSync(path))
+        {
+            console.log("folder exists")
+            fs.readdirSync(path).forEach(file => {
+                console.log(file)
+                arr.push(file)
+            })
+            console.log(arr)
+        }
+        else
+        {
+            console.log("no such folder")
+            res.status(500).json("no such folder")
+        }
+        res.status(200).json(arr)
+    }catch(error)
+    {
+        res.status(500).json(error)
+    }
+})
 
 
 module.exports = { router }
