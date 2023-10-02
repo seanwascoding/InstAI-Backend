@@ -1,6 +1,7 @@
 const express = require('express')
 const multer = require("multer");
 const path = require('path');
+const fs = require('fs')
 const router = express.Router()
 const { pool, storage } = require('../../src/database.js');
 
@@ -39,7 +40,7 @@ router.post('/upload', upload.array('file'), (req, res) => {
     //! test
     // const test = req.query.username
     // console.log(test)
-    
+
     res.send("test work")
 });
 
@@ -70,29 +71,27 @@ router.get('/download', (req, res) => {
 })
 
 //TODO search under the user of files
-router.get('/checkdata',(req,res)=>{
-    try{
+let arr = []
+router.get('/checkdata', (req, res) => {
+    try {
         const username = req.query.username
-        const path = path.join(__dirname,'../../uploads',username)
-        console.log(username,path)
-        if(fs.existsSync(path))
-        {
+        const user_path = path.join(__dirname, '../../uploads', username)
+        console.log(username, user_path)
+        if (fs.existsSync(user_path)) {
             console.log("folder exists")
-            fs.readdirSync(path).forEach(file => {
+            fs.readdirSync(user_path).forEach(file => {
                 console.log(file)
                 arr.push(file)
             })
             console.log(arr)
         }
-        else
-        {
+        else {
             console.log("no such folder")
             res.status(500).json("no such folder")
         }
         res.status(200).json(arr)
-    }catch(error)
-    {
-        res.status(500).json(error)
+    } catch (error) {
+        res.status(500).json(error.message)
     }
 })
 
