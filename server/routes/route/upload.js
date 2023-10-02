@@ -74,6 +74,7 @@ router.get('/download', (req, res) => {
 let arr = []
 router.get('/checkdata', (req, res) => {
     try {
+        arr = []
         const username = req.query.username
         const user_path = path.join(__dirname, '../../uploads', username)
         console.log(username, user_path)
