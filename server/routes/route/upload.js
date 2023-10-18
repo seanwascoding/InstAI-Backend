@@ -19,42 +19,62 @@ router.post("/upload", upload.array("file"), (req, res) => {
   // //! prepare
   const username = req.query.username;
   const filename = req.files[0].filename;
-  const imgpath = path.join(
+  let imgpath = path.join(
     __dirname,
     "../../uploads",
     username,
-    "image",
-    filename
+    "image"
   );
   console.log(username, filename, imgpath);
+  const query = 'INSERT INTO photo (file_name, image_data) VALUES (?, LOAD_FILE(?))';
+  
 
-  // //! insert image(buffer)
-  // const query = 'INSERT INTO photo (file_name, image_data) VALUES (?, LOAD_FILE(?))';
-  // pool.query(query, [filename, imgpath], (err, results) => {
-  //     if (err) throw err;
-  //     console.log(results.insertId)
-  //     res.json({ message: 'Image uploaded successfully!', id: results.insertId });
-  //     //!　test => search image(buffer=>binary)
-  //     // pool.query('select * from photo where file_name=?', [filename], (err, data) => {
-  //     //     if (err) {
-  //     //         console.log(err)
-  //     //     }
-  //     //     console.log(data)
-  //     // })
-  // });
+  //! insert image(buffer)
+  if (fs.existsSync(imgpath)) {
+    console.log("folder exists");
+    fs.readdirSync(imgpath).forEach((file) => {
+      console.log(file);
+      imgpath = path.join(
+        __dirname,
+        "../../uploads",
+        username,
+        "image",
+        file
+      );
+
+      pool.query('select file_name from photo where file_name=?', [file], (err, data) => {
+             if (err) {
+                 console.log(err)
+             }
+             if(data.length>0)
+             {
+                console.log(data)
+             }
+             else
+             {
+              pool.query(query, [file, imgpath], (err, results) => {
+                if (err) throw err;
+                console.log(results.insertId)
+              });
+             }
+             
+      })
+    });
+  }
+  res.json({ message: 'Image uploaded successfully!'});  
 
   //! test
   // const test = req.query.username
   // console.log(test)
-
-  res.send("test work");
 });
 
 //* download image from SQL
 router.get("/download", (req, res) => {
   //! prepare
   const username = req.query.username;
-  const filename = req.query.filename;
+  const filename = "1697361721028_5.png";
+  //const filename= req.query.filename;
+  console.log("123")
   const path2file = path.join(
     __dirname,
     "../../uploads",
@@ -62,22 +82,19 @@ router.get("/download", (req, res) => {
     "image",
     filename
   );
-  console.log(path2file);
-  res.download(path2file, (err) => {
+  console.log(username,path2file);
+  // Set the filename as a custom header
+  res.setHeader('x-filename', filename);
+  res.download(path2file,filename, (err) => {
     if (err) {
       console.log(err);
       res.status(500).send(err);
       return;
     } else {
       console.log("send work");
+      console.log(filename);
     }
   });
-
-  //! test
-  // const test = req.query.filename
-  // const test2 = req.query.username
-  // console.log(test, test2)
-  // res.send("test work")
 });
 
 //TODO search under the user of files
