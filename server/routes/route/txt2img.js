@@ -1,8 +1,8 @@
 const express = require('express')
 const axios = require('axios')
-const fs = require('fs')
+const fs = require('fs');
+const { error } = require('console');
 const router = express.Router()
-
 //* middleware
 router.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -58,24 +58,34 @@ router.post('/process', async (req, res) => {
         //     "save_images": false,
         // }
         //? send json(request) to stable diffusion
-        // axios.post('http://127.0.0.1:7860/sdapi/v1/txt2img', req.body, { timeout: 1000000 * 10 ^ 3 })
-        //     .then(reponse => {
-        //         const data_image = reponse.data.images
-        //         res.status(200).json(data_image)
-        //     })
-        //     .catch(error => {
-        //         console.log(error)
-        //         res.status(500).send("error")
-        //     })
+        axios.post('http://127.0.0.1:7860/sdapi/v1/txt2img', req.body, { timeout: 1000000 * 10 ^ 3 })
+            .then(reponse => {
+                const data_image = reponse.data.images
+                res.status(200).json(data_image)
+            })
+            .catch(error => {
+                console.log(error)
+                res.status(500).send("error")
+            })
     } catch (err) {
         console.log(err)
         res.status(500).send("error")
     }
 
     //! test
-    console.log(req.body)
-    res.send("test")
+    // console.log(req.body)
+    // res.send("test")
 
 })
+
+
+// router.get('/process', async (req, res) => {
+//     try{
+//         res.status(200).json(data_image);
+//     }catch(err){
+//         console.log(err);
+//         res.status(500).send("error");
+//     }
+// })
 
 module.exports = { router }

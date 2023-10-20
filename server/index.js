@@ -6,9 +6,12 @@ const app = express()
 const api = require('./routes/api')
 
 //* server setup
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit:'100mb'}));
+
 // app.use(express.static(path.join(__dirname, '../client')))
 app.use('/api', api.router)
+
+
 
 //* open server
 const port = process.env.PORT || 8080
