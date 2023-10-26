@@ -72,7 +72,7 @@ router.post("/upload", upload.array("file"), (req, res) => {
 router.get("/download", (req, res) => {
   //! prepare
   const username = req.query.username;
-  const filename = "1697361721028_5.png";
+  const filename = req.query.filename;
   //const filename= req.query.filename;
   console.log("123")
   const path2file = path.join(
@@ -84,7 +84,7 @@ router.get("/download", (req, res) => {
   );
   console.log(username,path2file);
   // Set the filename as a custom header
-  res.setHeader('x-filename', filename);
+  // res.setHeader('x-filename', filename);
   res.download(path2file,filename, (err) => {
     if (err) {
       console.log(err);
