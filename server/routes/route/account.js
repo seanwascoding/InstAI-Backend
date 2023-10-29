@@ -38,7 +38,8 @@ router.post('/login', (req, res) => {
             return res.json("Error");
         }
         if (data.length > 0) {
-            return res.json("Success");
+            console.log(data[0].id);
+            return res.json("Success"+ data[0].id);
         }
         else {
             return res.json("Faile");
