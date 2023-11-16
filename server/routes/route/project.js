@@ -3,6 +3,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const router = express.Router();
+const { pool } = require("../../src/database.js");
 
 router.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
@@ -26,8 +27,7 @@ router.get("/getproject", (req, res) => {
       });
       console.log(arr);
     } else {
-      console.log("no such folder");
-      res.status(500).json("no such folder");
+      fs.mkdirSync(user_path);
     }
     res.status(200).json(arr);
   } catch (error) {
@@ -41,6 +41,14 @@ router.post("/addproject", (req, res) => {
   console.log(projectname);
   const previousDir = path.join(__dirname, "..");
   const dir = path.join(previousDir, "../uploads", username, projectname);
+  const sql =
+    "CREATE TABLE " +
+    projectname +
+    "(  id INT AUTO_INCREMENT PRIMARY KEY,  file_name VARCHAR(255) NOT NULL,image_data LONGBLOB NOT NULL,requirements VARCHAR(255))";
+  pool.query(sql, null, (err, data) => {
+    if (err) console.log("table exists.");
+    else console.log("create success.");
+  });
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
     res.send("新增成功!");
@@ -56,7 +64,11 @@ router.post("/deleteproject", (req, res) => {
   console.log(projectname);
   const previousDir = path.join(__dirname, "..");
   const dir = path.join(previousDir, "../uploads", username, projectname);
-
+  const sql = "DROP TABLE " + projectname ;
+  pool.query(sql, [projectname], (err, data) => {
+    if (err) console.log("table does not exist.");
+    else console.log("table delete success.");
+  });
   try {
     // Use recursive option to remove the directory and its contents
     fs.rmdirSync(dir, { recursive: true });
