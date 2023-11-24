@@ -43,15 +43,21 @@ router.post("/addproject", (req, res) => {
   const dir = path.join(previousDir, "../uploads", username, projectname);
   const sql =
     "CREATE TABLE " +
-    projectname +
-    "(  id INT AUTO_INCREMENT PRIMARY KEY,  file_name VARCHAR(255) NOT NULL,image_data LONGBLOB NOT NULL,requirements VARCHAR(255))";
+    "projects" +
+    "(  id INT AUTO_INCREMENT PRIMARY KEY,  user_id VARCHAR(255) ,organization_id VARCHAR(255),project_name VARCHAR(255))";
   pool.query(sql, null, (err, data) => {
     if (err) console.log("table exists.");
     else console.log("create success.");
   });
+  const query = 'INSERT INTO projects (user_id, project_name) VALUES (?, ?)';
+  pool.query(query, [username, projectname], (err, results) => {
+    if (err) throw err;
+    console.log(results.insertId)
+    console.log("project insert success.")
+  });
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
-    res.send("新增成功!");
+    res.send("專案新增成功!");
   } else {
     res.send("專案已存在!");
   }

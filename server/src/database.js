@@ -25,11 +25,12 @@ const storage = multer.diskStorage({
     //        console.log(data)
     //  })
     const username = req.query.username;
+    const projectname = req.query.projectname;
     //console.log(file.originalname);
-    const dir = path.join(__dirname, "../uploads", username, "image");
-    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-      dir = path.join(__dirname, "../uploads", username, "model");
-    }
+    const dir = path.join(__dirname, "../uploads", username, projectname);
+    // if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+    //   dir = path.join(__dirname, "../uploads", username, "model");
+    // }
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
