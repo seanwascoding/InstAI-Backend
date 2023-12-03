@@ -29,9 +29,8 @@ router.post("/upload", upload.array("file"), (req, res) => {
   console.log(username, filename, projectname, imgpath,);
   const sql =
     "CREATE TABLE photos" +
-    "(  id INT AUTO_INCREMENT PRIMARY KEY, file_name VARCHAR(255) NOT NULL, project_id VARCHAR(255) NOT NULL,image_data LONGBLOB)";
-  const query = 'INSERT INTO photos (file_name, project_id, image_data) VALUES (?, ?, LOAD_FILE(?))';
-  
+    "(  id INT AUTO_INCREMENT PRIMARY KEY, file_name VARCHAR(255) NOT NULL, project_id VARCHAR(255) NOT NULL,photo_url VARCHAR(255) NOT NULL)";
+  const query = 'INSERT INTO photos (file_name, project_id, photo_url) VALUES (?, ?, ?)';
   pool.query(sql, null, (err, data) => {
     if (err) console.log("photos table exists.");
     else console.log("photos create success.");
@@ -42,25 +41,25 @@ router.post("/upload", upload.array("file"), (req, res) => {
     fs.readdirSync(imgpath).forEach((file) => {
       console.log(file);
       if(file != "requirements"){
-        imgpath = path.join(
+        let imgurl = path.join(
           __dirname,
           "../../uploads",
           username,
           projectname,
           file
         );
-  
-        pool.query('select file_name from photos where file_name=? and project_id=?', [file,projectname], (err, data) => {
+        console.log(imgpath);
+        pool.query('select * from photos where file_name=? and project_id=?', [file,projectname], (err, data) => {
                if (err) {
                    console.log(err)
                }
-               if(data.length>0)
+               if(data.length!=0)
                {
                   console.log(data)
                }
                else
                {
-                pool.query(query, [file, projectname, imgpath], (err, results) => {
+                pool.query(query, [file, projectname, imgurl], (err, results) => {
                   if (err) throw err;
                   console.log(results.insertId)
                 });
@@ -135,6 +134,7 @@ router.post("/requirement", (req, res) => {
   // //! prepare
   const username = req.query.username;
   const requirements = req.body.request.req;
+  const question= req.body.question;
   const projectname = req.query.projectname;
   const filePath = path.join(__dirname,
     "../../uploads",
@@ -143,7 +143,7 @@ router.post("/requirement", (req, res) => {
     "requirements",
   );
   
-  console.log(username, requirements, projectname, filePath);
+  console.log(username, requirements, question, projectname, filePath);
   if (!fs.existsSync(filePath)){
     fs.mkdirSync(filePath);
   }
@@ -154,8 +154,9 @@ router.post("/requirement", (req, res) => {
     count++;
     fileName = 'requirements' + count.toString() + '.txt';
   }
-  const finalpath= path.join(filePath,fileName);
-  fs.writeFile(finalpath, requirements, (err) => {
+  const finalpath = path.join(filePath,fileName);
+  const writecontent = question + "\n" + requirements;
+  fs.writeFile(finalpath, writecontent, (err) => {
     if (err) {
       console.error('發生錯誤：', err);
     } else {
@@ -164,12 +165,12 @@ router.post("/requirement", (req, res) => {
   });
   const sql =
     "CREATE TABLE requirements" +
-    "(  id INT AUTO_INCREMENT PRIMARY KEY,  project_id VARCHAR(255) NOT NULL,question VARCHAR(255))";
+    "(  id INT AUTO_INCREMENT PRIMARY KEY,  project_id VARCHAR(255) NOT NULL, question VARCHAR(255) NOT NULL, content VARCHAR(255) NOT NULL)";
   pool.query(sql, null, (err, data) => {
       if (err) console.log("requirements table exists.");
       else console.log("requirements create success.");
   });
-  const insert = 'INSERT INTO requirements (project_id, question) VALUES (?, ?)';
+  const insert = 'INSERT INTO requirements (project_id, question, content) VALUES (?, ?, ?)';
   pool.query('select id from projects where project_name=?', [projectname], (err, data) => {
     if (err) {
         console.log(err);
@@ -177,7 +178,7 @@ router.post("/requirement", (req, res) => {
     if(data.length>0)
     {
       const project_id=data[0].id;
-      pool.query(insert, [project_id, requirements], (err, results) => {
+      pool.query(insert, [project_id, question, requirements], (err, results) => {
         if (err) throw err;
         console.log(results.insertId);
       });
