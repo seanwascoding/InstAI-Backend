@@ -167,14 +167,14 @@ router.post("/requirement", (req, res) => {
   if (!fs.existsSync(filePath)){
     fs.mkdirSync(filePath);
   }
-  let count = 1;
-  let fileName = 'requirements' + count.toString() + '.txt';
-
-  while (fs.existsSync(path.join(filePath, fileName))) {
-    count++;
-    fileName = 'requirements' + count.toString() + '.txt';
-  }
-  const finalpath = path.join(filePath,fileName);
+  // let count = 1;
+  // let fileName = 'requirements' + count.toString() + '.json';
+  // while (fs.existsSync(path.join(filePath, fileName))) {
+  //   count++;
+  //   fileName = 'requirements' + count.toString() + '.json';
+  // }
+  const fileNames = 'requirements.json';
+  const finalpath = path.join(filePath,fileNames);
   const writecontent = requirement_path;
   fs.writeFile(finalpath, writecontent, (err) => {
     if (err) {
@@ -185,7 +185,7 @@ router.post("/requirement", (req, res) => {
   });
   const sql =
     "CREATE TABLE requirements" +
-    "(  id INT AUTO_INCREMENT PRIMARY KEY,  project_id VARCHAR(255) NOT NULL, requirement_path json NOT NULL, author VARCHAR(255) NOT NULL, LastUpdated VARCHAR(255) NOT NULL, status VARCHAR(255) )";
+    "(  id INT AUTO_INCREMENT PRIMARY KEY,  project_id VARCHAR(255) NOT NULL, requirement_path VARCHAR(255) NOT NULL, author VARCHAR(255) NOT NULL, LastUpdated VARCHAR(255) NOT NULL, status VARCHAR(255) )";
   pool.query(sql, null, (err, data) => {
       if (err) console.log("requirements table exists.");
       else console.log("requirements create success.");
@@ -202,7 +202,8 @@ router.post("/requirement", (req, res) => {
       console.log(currentDate);
       
       console.log(requirement_path);
-      pool.query(insert, [project_id, requirement_path, username, currentDate], (err, results) => {
+      console.log(finalpath);
+      pool.query(insert, [project_id, finalpath, username, currentDate], (err, results) => {
         if (err) throw err;
         console.log(results.insertId);
       });
@@ -234,7 +235,7 @@ router.get("/getrequirement", (req, res) => {
   const startKeyword2 = '"Requirement2":{';
   const endKeyword2 = ',"ID"';
 
-  let filePath = path.join(path2file, 'requirements1.txt');
+  let filePath = path.join(path2file, 'requirements.json');
   console.log(filePath);
 
   fs.readFile(filePath, 'utf8', (err, data) => {
