@@ -13,6 +13,8 @@ router.use((req, res, next) => {
   next();
 });
 
+
+
 //* upload image to SQL
 const upload = multer({ storage: storage });
 router.post("/upload", upload.array("file"), (req, res) => {
@@ -20,6 +22,8 @@ router.post("/upload", upload.array("file"), (req, res) => {
   const username = req.query.username;
   const filename = req.files[0].filename;
   const projectname = req.query.projectname;
+  const currentDate = new Date();
+  console.log(currentDate);
   let imgpath = path.join(
     __dirname,
     "../../uploads",
@@ -29,8 +33,8 @@ router.post("/upload", upload.array("file"), (req, res) => {
   console.log(username, filename, projectname, imgpath,);
   const sql =
     "CREATE TABLE photos" +
-    "(  id INT AUTO_INCREMENT PRIMARY KEY, file_name VARCHAR(255) NOT NULL, project_id VARCHAR(255) NOT NULL,photo_url VARCHAR(255) NOT NULL)";
-  const query = 'INSERT INTO photos (file_name, project_id, photo_url) VALUES (?, ?, ?)';
+    "(  id INT AUTO_INCREMENT PRIMARY KEY, image_name VARCHAR(255) NOT NULL, project_id VARCHAR(255) NOT NULL,image_path VARCHAR(255) NOT NULL, author VARCHAR(255) NOT NULL, LastUpdated VARCHAR(255) NOT NULL)";
+  const query = 'INSERT INTO photos (image_name, project_id, image_path, author, LastUpdated) VALUES (?, ?, ?, ?, ?)';
   pool.query(sql, null, (err, data) => {
     if (err) console.log("photos table exists.");
     else console.log("photos create success.");
@@ -49,7 +53,7 @@ router.post("/upload", upload.array("file"), (req, res) => {
           file
         );
         console.log(imgpath);
-        pool.query('select * from photos where file_name=? and project_id=?', [file,projectname], (err, data) => {
+        pool.query('select * from photos where image_name=? and project_id=?', [file,projectname], (err, data) => {
                if (err) {
                    console.log(err)
                }
@@ -59,7 +63,7 @@ router.post("/upload", upload.array("file"), (req, res) => {
                }
                else
                {
-                pool.query(query, [file, projectname, imgurl], (err, results) => {
+                pool.query(query, [file, projectname, imgurl, username, currentDate], (err, results) => {
                   if (err) throw err;
                   console.log(results.insertId)
                 });
@@ -79,29 +83,45 @@ router.post("/upload", upload.array("file"), (req, res) => {
 router.get("/download", (req, res) => {
   //! prepare
   const username = req.query.username;
-  const filename = req.query.filename;
+  const projectname = req.query.projectname;
   //const filename= req.query.filename;
-  console.log("123")
   const path2file = path.join(
     __dirname,
     "../../uploads",
     username,
-    "image",
-    filename
+    projectname
   );
-  console.log(username,path2file);
+  console.log(username, projectname, path2file);
   // Set the filename as a custom header
   // res.setHeader('x-filename', filename);
-  res.download(path2file,filename, (err) => {
-    if (err) {
-      console.log(err);
-      res.status(500).send(err);
-      return;
-    } else {
-      console.log("send work");
-      console.log(filename);
+  const images = [];
+  fs.readdirSync(path2file).forEach((file) =>{
+    if(file != "requirements"){
+      let imgurl = path.join(
+        __dirname,
+        "../../uploads",
+        username,
+        projectname,
+        file
+      );
+      console.log(imgurl);
+      imgurl=`/uploads/${username}/${projectname}/${file}`;
+      console.log(imgurl);
+      images.push(imgurl);
+      // res.download(path2file,file, (err) => {
+      //   if (err) {
+      //     console.log(err);
+      //     res.status(500).send(err);
+      //     return;
+      //   } else {
+      //     console.log("send work");
+      //     console.log(file);
+      //   }
+      // });
     }
   });
+  console.log(images);
+  res.json({ images });
 });
 
 //TODO search under the user of files
@@ -133,8 +153,7 @@ router.get("/checkdata", (req, res) => {
 router.post("/requirement", (req, res) => {
   // //! prepare
   const username = req.query.username;
-  const requirements = req.body.request.req;
-  const question= req.body.question;
+  const requirement_path = JSON.stringify(req.body.request);
   const projectname = req.query.projectname;
   const filePath = path.join(__dirname,
     "../../uploads",
@@ -142,8 +161,9 @@ router.post("/requirement", (req, res) => {
     projectname,
     "requirements",
   );
-  
-  console.log(username, requirements, question, projectname, filePath);
+  const currentDate = new Date();
+  console.log(currentDate);
+  console.log(username, projectname, filePath);
   if (!fs.existsSync(filePath)){
     fs.mkdirSync(filePath);
   }
@@ -155,7 +175,7 @@ router.post("/requirement", (req, res) => {
     fileName = 'requirements' + count.toString() + '.txt';
   }
   const finalpath = path.join(filePath,fileName);
-  const writecontent = question + "\n" + requirements;
+  const writecontent = requirement_path;
   fs.writeFile(finalpath, writecontent, (err) => {
     if (err) {
       console.error('發生錯誤：', err);
@@ -165,12 +185,12 @@ router.post("/requirement", (req, res) => {
   });
   const sql =
     "CREATE TABLE requirements" +
-    "(  id INT AUTO_INCREMENT PRIMARY KEY,  project_id VARCHAR(255) NOT NULL, question VARCHAR(255) NOT NULL, content VARCHAR(255) NOT NULL)";
+    "(  id INT AUTO_INCREMENT PRIMARY KEY,  project_id VARCHAR(255) NOT NULL, requirement_path json NOT NULL, author VARCHAR(255) NOT NULL, LastUpdated VARCHAR(255) NOT NULL, status VARCHAR(255) )";
   pool.query(sql, null, (err, data) => {
       if (err) console.log("requirements table exists.");
       else console.log("requirements create success.");
   });
-  const insert = 'INSERT INTO requirements (project_id, question, content) VALUES (?, ?, ?)';
+  const insert = 'INSERT INTO requirements (project_id, requirement_path, author, LastUpdated) VALUES (?, ?, ?, ?)';
   pool.query('select id from projects where project_name=?', [projectname], (err, data) => {
     if (err) {
         console.log(err);
@@ -178,7 +198,11 @@ router.post("/requirement", (req, res) => {
     if(data.length>0)
     {
       const project_id=data[0].id;
-      pool.query(insert, [project_id, question, requirements], (err, results) => {
+      const currentDate = new Date();
+      console.log(currentDate);
+      
+      console.log(requirement_path);
+      pool.query(insert, [project_id, requirement_path, username, currentDate], (err, results) => {
         if (err) throw err;
         console.log(results.insertId);
       });
@@ -193,6 +217,68 @@ router.post("/requirement", (req, res) => {
 
 });
 
+router.get("/getrequirement", (req, res) => {
+  const username = req.query.username;
+  const projectname = req.query.projectname;
+  const path2file = path.join(
+    __dirname,
+    "../../uploads",
+    username,
+    projectname,
+    "requirements"
+  );
+  console.log(username, projectname, path2file);
+  let content = [];
+  const startKeyword1 = '"Requirement1":{';
+  const endKeyword1 = ',"Requirement2"';
+  const startKeyword2 = '"Requirement2":{';
+  const endKeyword2 = ',"ID"';
+
+  let filePath = path.join(path2file, 'requirements1.txt');
+  console.log(filePath);
+
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('讀取檔案時發生錯誤:', err);
+      return res.status(500).json({ error: '讀取檔案時發生錯誤' });
+    }
+
+    const startIndex = data.indexOf(startKeyword1);
+
+    if (startIndex !== -1) {
+      const endIndex = data.indexOf(endKeyword1, startIndex);
+
+      if (endIndex !== -1) {
+        const selectedContent = data.slice(startIndex, endIndex);
+        console.log('所需範圍的內容：', selectedContent);
+        content.push(selectedContent);
+      } else {
+        console.log(`未找到 "${endKeyword1}"。`);
+      }
+    } else {
+      console.log(`未找到 "${startKeyword1}"。`);
+    }
+
+    const startIndex2 = data.indexOf(startKeyword2);
+
+    if (startIndex2 !== -1) {
+      const endIndex = data.indexOf(endKeyword2, startIndex2);
+
+      if (endIndex !== -1) {
+        const selectedContent = data.slice(startIndex2, endIndex);
+        console.log('所需範圍的內容：', selectedContent);
+        content.push(selectedContent);
+      } else {
+        console.log(`未找到 "${endKeyword2}"。`);
+      }
+    } else {
+      console.log(`未找到 "${startKeyword2}"。`);
+    }
+
+    console.log(content);
+    res.json({ content });
+  });
+});
 
 
 module.exports = { router };

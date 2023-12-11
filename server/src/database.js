@@ -28,6 +28,7 @@ const storage = multer.diskStorage({
     const projectname = req.query.projectname;
     //console.log(file.originalname);
     const dir = path.join(__dirname, "../uploads", username, projectname);
+    console.log(projectname);
     // if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
     //   dir = path.join(__dirname, "../uploads", username, "model");
     // }
@@ -37,7 +38,7 @@ const storage = multer.diskStorage({
     cb(null, dir);
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + "_" + file.originalname);
+    cb(null, file.originalname);
   },
 });
 

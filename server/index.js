@@ -7,7 +7,7 @@ const api = require('./routes/api')
 
 //* server setup
 app.use(bodyParser.json({limit:'100mb'}));
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // app.use(express.static(path.join(__dirname, '../client')))
 app.use('/api', api.router)
 
