@@ -124,6 +124,30 @@ router.get("/download", (req, res) => {
   res.json({ images });
 });
 
+
+router.post("/deleteimg", (req, res) => {
+  const username = req.query.username;
+  const projectname = req.query.projectname;
+  const imageName = req.body.filename;
+  const fileName = path.basename(imageName);
+  console.log(username, projectname, fileName);
+  const folderPath = path.join(
+    __dirname,
+    "../../uploads",
+    username,
+    projectname
+  );
+  const imagePath = path.join(folderPath, fileName);
+
+  fs.unlink(imagePath, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('刪除圖片失敗');
+    }
+    res.status(200).send('圖片刪除成功');
+  });
+});
+
 //TODO search under the user of files
 let arr = [];
 router.get("/checkdata", (req, res) => {

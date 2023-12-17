@@ -58,6 +58,7 @@ router.post('/process', async (req, res) => {
         //     "save_images": false,
         // }
         //? send json(request) to stable diffusion
+        console.log(req.body);
         axios.post('http://127.0.0.1:7860/sdapi/v1/txt2img', req.body, { timeout: 1000000 * 10 ^ 3 })
             .then(reponse => {
                 const data_image = reponse.data.images
