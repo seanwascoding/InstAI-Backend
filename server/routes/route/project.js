@@ -70,10 +70,10 @@ router.post("/deleteproject", (req, res) => {
   console.log(projectname);
   const previousDir = path.join(__dirname, "..");
   const dir = path.join(previousDir, "../uploads", username, projectname);
-  const sql = "DROP TABLE " + projectname ;
+  const sql = "delete from  projects where project_name = ?" ;
   pool.query(sql, [projectname], (err, data) => {
-    if (err) console.log("table does not exist.");
-    else console.log("table delete success.");
+    if (err) console.log("delete error.");
+    else console.log("delete success.");
   });
   try {
     // Use recursive option to remove the directory and its contents

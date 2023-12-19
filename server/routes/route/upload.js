@@ -138,7 +138,11 @@ router.post("/deleteimg", (req, res) => {
     projectname
   );
   const imagePath = path.join(folderPath, fileName);
-
+  const delsql = "delete from  photos where image_name = ?" ;
+  pool.query(delsql, [fileName], (err, data) => {
+    if (err) console.log("delete image error.");
+    else console.log("delete image success.");
+  });
   fs.unlink(imagePath, (err) => {
     if (err) {
       console.error(err);
