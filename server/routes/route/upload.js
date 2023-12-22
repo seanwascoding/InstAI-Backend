@@ -31,14 +31,7 @@ router.post("/upload", upload.array("file"), (req, res) => {
     projectname
   );
   console.log(username, filename, projectname, imgpath,);
-  const sql =
-    "CREATE TABLE photos" +
-    "(  id INT AUTO_INCREMENT PRIMARY KEY, image_name VARCHAR(255) NOT NULL, project_id VARCHAR(255) NOT NULL,image_path VARCHAR(255) NOT NULL, author VARCHAR(255) NOT NULL, LastUpdated VARCHAR(255) NOT NULL)";
   const query = 'INSERT INTO photos (image_name, project_id, image_path, author, LastUpdated) VALUES (?, ?, ?, ?, ?)';
-  pool.query(sql, null, (err, data) => {
-    if (err) console.log("photos table exists.");
-    else console.log("photos create success.");
-  });
   //! insert image(buffer)
   if (fs.existsSync(imgpath)) {
     console.log("folder exists");
@@ -211,13 +204,7 @@ router.post("/requirement", (req, res) => {
       console.log(`成功新增檔案：${finalpath}`);
     }
   });
-  const sql =
-    "CREATE TABLE requirements" +
-    "(  id INT AUTO_INCREMENT PRIMARY KEY,  project_id VARCHAR(255) NOT NULL, requirement_path VARCHAR(255) NOT NULL, author VARCHAR(255) NOT NULL, LastUpdated VARCHAR(255) NOT NULL, status VARCHAR(255) )";
-  pool.query(sql, null, (err, data) => {
-      if (err) console.log("requirements table exists.");
-      else console.log("requirements create success.");
-  });
+  
   const insert = 'INSERT INTO requirements (project_id, requirement_path, author, LastUpdated) VALUES (?, ?, ?, ?)';
   pool.query('select id from projects where project_name=?', [projectname], (err, data) => {
     if (err) {

@@ -41,14 +41,6 @@ router.post("/addproject", (req, res) => {
   console.log(projectname);
   const previousDir = path.join(__dirname, "..");
   const dir = path.join(previousDir, "../uploads", username, projectname);
-  const sql =
-    "CREATE TABLE " +
-    "projects" +
-    "(  id INT AUTO_INCREMENT PRIMARY KEY,  user_id VARCHAR(255) ,organization_id VARCHAR(255),project_name VARCHAR(255))";
-  pool.query(sql, null, (err, data) => {
-    if (err) console.log("table exists.");
-    else console.log("create success.");
-  });
   const query = 'INSERT INTO projects (user_id, project_name) VALUES (?, ?)';
   pool.query(query, [username, projectname], (err, results) => {
     if (err) throw err;
