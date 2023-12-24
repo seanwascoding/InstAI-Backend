@@ -42,10 +42,21 @@ router.post("/addproject", (req, res) => {
   const previousDir = path.join(__dirname, "..");
   const dir = path.join(previousDir, "../uploads", username, projectname);
   const query = 'INSERT INTO projects (user_id, project_name) VALUES (?, ?)';
-  pool.query(query, [username, projectname], (err, results) => {
+  const check = 'select * from projects where project_name=?';
+  pool.query(check, [projectname], (err, results) => {
     if (err) throw err;
-    console.log(results.insertId)
-    console.log("project insert success.")
+    if(results.length>0)
+    {
+      console.log("專案已存在");
+    }
+    else
+    {
+      pool.query(query, [username, projectname], (err, results) => {
+        if (err) throw err;
+        console.log(results.insertId)
+        console.log("project insert success.")
+      });
+    }
   });
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
