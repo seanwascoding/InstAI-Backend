@@ -206,6 +206,7 @@ router.post("/requirement", (req, res) => {
   });
   
   const insert = 'INSERT INTO requirements (project_id, requirement_path, author, LastUpdated) VALUES (?, ?, ?, ?)';
+  
   pool.query('select id from projects where project_name=?', [projectname], (err, data) => {
     if (err) {
         console.log(err);
@@ -218,10 +219,25 @@ router.post("/requirement", (req, res) => {
       
       console.log(requirement_path);
       console.log(finalpath);
-      pool.query(insert, [project_id, finalpath, username, currentDate], (err, results) => {
+      const updatesql = "update requirements set LastUpdated = ? where project_id = ?;" ;
+      pool.query('select * from requirements where project_id=?', [project_id], (err, results) => {
         if (err) throw err;
-        console.log(results.insertId);
-      });
+        if(results.length>0)
+        {
+          pool.query(updatesql, [currentDate, project_id], (err, results) => {
+            if (err) throw err;
+            console.log("update requirements success.");
+          });
+        }
+        else
+        {
+          pool.query(insert, [project_id, finalpath, username, currentDate], (err, results) => {
+            if (err) throw err;
+            console.log(results.insertId);
+            console.log("insert requirements success.");
+          });
+        }
+      });    
     }
     else
     {
