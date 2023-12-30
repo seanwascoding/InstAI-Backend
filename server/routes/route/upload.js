@@ -61,11 +61,12 @@ router.post("/upload", upload.array("file"), (req, res) => {
                   console.log(results.insertId)
                 });
                }    
-        })
+        });
+        res.json({ message: 'Image uploaded successfully!'});  
       }
     });
   }
-  res.json({ message: 'Image uploaded successfully!'});  
+  
 
   //! test
   // const test = req.query.username
@@ -219,7 +220,7 @@ router.post("/requirement", (req, res) => {
       
       console.log(requirement_path);
       console.log(finalpath);
-      const updatesql = "update requirements set LastUpdated = ? where project_id = ?;" ;
+      const updatesql = "update requirements set LastUpdated = ? where project_id = ?" ;
       pool.query('select * from requirements where project_id=?', [project_id], (err, results) => {
         if (err) throw err;
         if(results.length>0)

@@ -28,7 +28,7 @@ pool.connect((err) => {
   const projects =
     "CREATE TABLE " +
     "projects" +
-    "(  id INT AUTO_INCREMENT PRIMARY KEY,  user_id VARCHAR(255) ,organization_id VARCHAR(255),project_name VARCHAR(255))";
+    "(  id INT AUTO_INCREMENT PRIMARY KEY,  user_id VARCHAR(255) ,organization_id VARCHAR(255),project_name VARCHAR(255),  step VARCHAR(255))";
   pool.query(projects, null, (err, data) => {
     if (!err)
       console.log("projects create success.");

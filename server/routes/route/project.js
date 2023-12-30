@@ -41,7 +41,7 @@ router.post("/addproject", (req, res) => {
   console.log(projectname);
   const previousDir = path.join(__dirname, "..");
   const dir = path.join(previousDir, "../uploads", username, projectname);
-  const query = 'INSERT INTO projects (user_id, project_name) VALUES (?, ?)';
+  const query = 'INSERT INTO projects (user_id, project_name, step) VALUES (?, ?, ?)';
   const check = 'select * from projects where project_name=?';
   pool.query(check, [projectname], (err, results) => {
     if (err) throw err;
@@ -51,7 +51,7 @@ router.post("/addproject", (req, res) => {
     }
     else
     {
-      pool.query(query, [username, projectname], (err, results) => {
+      pool.query(query, [username, projectname, '0'], (err, results) => {
         if (err) throw err;
         console.log(results.insertId)
         console.log("project insert success.")
@@ -86,6 +86,42 @@ router.post("/deleteproject", (req, res) => {
     console.error("Error deleting directory:", err);
     res.status(500).send("刪除專案時發生錯誤"); // Error occurred while deleting
   }
+});
+
+router.post("/confirmstep", (req, res) => {
+  const step = req.query.step;
+  const username = req.query.username;
+  const projectname = req.query.projectname;
+  console.log(projectname);
+
+  const updatestep = "update projects set step = ? where user_id = ? and project_name = ?";
+  pool.query(updatestep, [step,username, projectname], (err, results) => {
+    if (err) throw err;
+    console.log("update projects step to " + step + "success!");
+    res.status(200).send(step);
+  });
+});
+
+router.get("/getstep", (req, res) => {
+  const username = req.query.username;
+  const projectname = req.query.projectname;
+  console.log(projectname);
+
+  const getstep = "select step from  projects where user_id = ? and project_name = ?";
+  pool.query(getstep, [username, projectname], (err, results) => {
+    if (err) {
+      console.error("Error executing SQL query:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+
+    if (results.length > 0) {
+      const step = results[0].step;
+      console.log("Step:", step);
+      return res.status(200).send(step);
+    } else {
+      return res.status(404).json({ error: "Project not found" });
+    }
+  });
 });
 
 module.exports = { router };
