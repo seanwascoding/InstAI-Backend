@@ -9,7 +9,7 @@ const queue = require('./route/queue.js')
 const account = require('./route/account.js')
 const upload = require('./route/upload.js')
 const project= require('./route/project.js')
-
+const model= require('./route/model.js')
 //* api
 router.use('/img2img', img2img.router)
 router.use('/txt2img', txt2img.router)
@@ -18,5 +18,5 @@ router.use('/queue', queue.router)
 router.use('/account', account.router)
 router.use('/upload', upload.router)
 router.use('/project', project.router)
-
+router.use('/model', model.router)
 module.exports = { router }

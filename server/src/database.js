@@ -40,6 +40,13 @@ pool.connect((err) => {
       if (!err)
         console.log("requirements create success.");
   });
+  const version =
+    "CREATE TABLE version" +
+    "(  id INT AUTO_INCREMENT PRIMARY KEY,  project_id VARCHAR(255) NOT NULL, model_path VARCHAR(255) , model_name VARCHAR(255) , performance_path VARCHAR(255) , version_number VARCHAR(255), createtime VARCHAR(255) )";
+  pool.query(version, null, (err, data) => {
+      if (!err)
+        console.log("requirements create success.");
+  });
 });
 
 //* setup download destination
